@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SQL Intrusion Detection System</title>
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 60%;
+            margin: 60px auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 12px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        p {
+            text-align: center;
+            color: #555;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 12px;
+            font-size: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            resize: vertical;
+        }
+
+        button {
+            margin-top: 15px;
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .result {
+            margin-top: 25px;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .normal {
+            background-color: #eafaf1;
+            color: #1e8449;
+            border-left: 6px solid #2ecc71;
+        }
+
+        .malicious {
+            background-color: #fdecea;
+            color: #922b21;
+            border-left: 6px solid #e74c3c;
+        }
+
+        .explanation {
+            margin-top: 15px;
+        }
+
+        ul {
+            margin-top: 8px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 13px;
+            color: #777;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>SQL Intrusion Detection System</h1>
+    <p>Enter an SQL query to check whether it is malicious or normal</p>
+
+    <form method="POST">
+        <textarea name="query" placeholder="Enter SQL query here..." required></textarea>
+        <button type="submit">Analyze Query</button>
+    </form>
+
+    {% if result %}
+        <div class="result {% if 'Malicious' in result %}malicious{% else %}normal{% endif %}">
+            <strong>Prediction:</strong> {{ result }} <br>
+            <strong>Risk Score:</strong> {{ risk }} %
+        </div>
+    {% endif %}
+
+    {% if explanation %}
+        <div class="explanation">
+            <strong>Why was this result predicted?</strong>
+            <ul>
+                {% for reason in explanation %}
+                    <li>{{ reason }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+</div>
+
+<footer>
+    Machine Learning–Based Database Intrusion Detection System
+</footer>
+
+</body>
+</html>
