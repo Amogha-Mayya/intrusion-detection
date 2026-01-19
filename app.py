@@ -47,7 +47,7 @@ def index():
         if prediction == 1:
             result = "⚠ SQL Injection Detected"
         else:
-            result = "✅ Normal Query"
+            result = "✅ Normal Query Detected "
 
     return render_template("index.html", result=result, risk=risk)
 
