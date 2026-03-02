@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Query Results</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            padding: 30px;
+        }
+
+        h1 { color: #333; }
+
+        .info {
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #2c3e50;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .empty {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Query Results</h1>
+
+<div class="info">
+    <strong>Table(s):</strong> {{ table }} <br>
+    <strong>Risk Score:</strong> {{ risk }}%
+</div>
+
+<div class="info">
+    Total rows fetched: <strong>{{ rows | length }}</strong>
+</div>
+
+{% if rows and rows|length > 0 %}
+<table>
+    {% for row in rows %}
+    <tr>
+        {% for col in row %}
+        <td>{{ col }}</td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p class="empty">No data returned by the query.</p>
+{% endif %}
+
+</body>
+</html>

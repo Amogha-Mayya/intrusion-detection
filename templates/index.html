@@ -2,130 +2,572 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SQL Intrusion Detection System</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered SQL Intrusion Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background-color: #f4f6f9;
+        
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
 
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: #000000;
+            color: #ff5a5a;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 255, 157, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 157, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(50px); }
+        }
+
+        .glow-orb {
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.15;
+            pointer-events: none;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            background: #00ff9d;
+            top: -10%;
+            right: -10%;
+        }
+
+        .orb-2 {
+            background: #00d4ff;
+            bottom: -10%;
+            left: -10%;
+            animation-delay: -4s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, -30px) scale(1.1); }
+        }
+
+        /* Header */
+        header {
+            position: relative;
+            z-index: 10;
+            padding: 30px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .header-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .ai-badge {
+            background: linear-gradient(135deg, #00ff9d, #00d4ff);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #000;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #00ff9d;
+            border-radius: 50%;
+            box-shadow: 0 0 15px #00ff9d;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.9); }
+        }
+
+        .status-text {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Main Container */
         .container {
-            width: 60%;
-            margin: 60px auto;
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 0 12px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 10;
+            max-width: 1100px;
+            margin: 50px auto;
+            padding: 0 30px;
+        }
+
+        .main-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 50px;
+            backdrop-filter: blur(20px);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
 
         h1 {
+            font-size: 48px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff, #00ff9d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
             text-align: center;
-            color: #2c3e50;
         }
 
-        p {
+        .subtitle {
             text-align: center;
-            color: #555;
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 45px;
+        }
+
+        /* Input Section */
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        .input-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .input-icon {
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #00ff9d, #00d4ff);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
         }
 
         textarea {
             width: 100%;
-            height: 120px;
-            padding: 12px;
-            font-size: 15px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            resize: vertical;
+            height: 160px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            color: #ffffff;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            resize: none;
+            transition: all 0.3s ease;
+            outline: none;
         }
 
+        textarea::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        textarea:focus {
+            border-color: #00ff9d;
+            box-shadow: 0 0 0 3px rgba(0, 255, 157, 0.1);
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        /* Button */
         button {
-            margin-top: 15px;
             width: 100%;
-            padding: 12px;
-            font-size: 16px;
-            background-color: #3498db;
-            color: white;
+            padding: 18px;
+            background: linear-gradient(135deg, #00ff9d, #00d4ff);
             border: none;
-            border-radius: 5px;
+            border-radius: 12px;
+            color: #000000;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
             cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        button:hover::before {
+            left: 100%;
         }
 
         button:hover {
-            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(0, 255, 157, 0.4);
         }
 
-        .result {
-            margin-top: 25px;
-            padding: 15px;
-            border-radius: 5px;
-            font-size: 16px;
+        button:active {
+            transform: translateY(0);
         }
 
-        .normal {
-            background-color: #eafaf1;
-            color: #1e8449;
-            border-left: 6px solid #2ecc71;
+        /* Result Section */
+        .result-box {
+            margin-top: 40px;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(0, 255, 157, 0.05), rgba(0, 212, 255, 0.05));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            animation: slideIn 0.5s ease;
         }
 
-        .malicious {
-            background-color: #fdecea;
-            color: #922b21;
-            border-left: 6px solid #e74c3c;
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .explanation {
-            margin-top: 15px;
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
         }
 
-        ul {
+        .threat-badge {
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .threat-badge.low {
+            background: rgba(0, 255, 157, 0.15);
+            color: #00ff9d;
+            border: 1px solid rgba(0, 255, 157, 0.3);
+        }
+
+        .threat-badge.medium {
+            background: rgba(255, 191, 0, 0.15);
+            color: #ffbf00;
+            border: 1px solid rgba(255, 191, 0, 0.3);
+        }
+
+        .threat-badge.high {
+            background: rgba(255, 68, 68, 0.15);
+            color: #ff4444;
+            border: 1px solid rgba(255, 68, 68, 0.3);
+        }
+
+        /* Risk Meter */
+        .meter-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .meter {
+            position: relative;
+            width: 180px;
+            height: 180px;
+        }
+
+        svg {
+            width: 180px;
+            height: 180px;
+            transform: rotate(-90deg);
+        }
+
+        circle {
+            fill: none;
+        }
+
+        .bg {
+            stroke: rgba(255, 255, 255, 0.05);
+            stroke-width: 14;
+        }
+
+        .progress {
+            stroke-width: 14;
+            stroke-dasharray: 471;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1s ease;
+        }
+
+        .meter-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .meter-text .percentage {
+            font-size: 30px;
+            font-weight: 700;
+            display: block;
+            line-height: 1;
+        }
+
+        .meter-text .label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 2px;
             margin-top: 8px;
         }
 
+        /* Prediction */
+        .prediction-text {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 25px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .prediction-text strong {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        /* Explanation */
+        .explanation {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 25px;
+        }
+
+        .explanation-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #00ff9d;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .explanation ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .explanation li {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            line-height: 1.6;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .explanation li:last-child {
+            border-bottom: none;
+        }
+
+        .explanation li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: #00ff9d;
+            font-weight: 700;
+        }
+
+        /* Footer */
         footer {
             text-align: center;
-            margin-top: 30px;
+            padding: 30px;
+            margin-top: 50px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.3);
             font-size: 13px;
-            color: #777;
+        }
+
+        .footer-tech {
+            margin-top: 10px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-card {
+                padding: 30px 25px;
+            }
+
+            h1 {
+                font-size: 36px;
+            }
+
+            .result-box {
+                padding: 25px;
+            }
+
+            .meter {
+                width: 150px;
+                height: 150px;
+            }
+
+            svg {
+                width: 150px;
+                height: 150px;
+            }
+
+            .meter-text .percentage {
+                font-size: 36px;
+            }
         }
     </style>
 </head>
-
 <body>
+    <div class="bg-grid"></div>
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
 
-<div class="container">
-    <h1>SQL Intrusion Detection System</h1>
-    <p>Enter an SQL query to check whether it is malicious or normal</p>
-
-    <form method="POST">
-        <textarea name="query" placeholder="Enter SQL query here..." required></textarea>
-        <button type="submit">Analyze Query</button>
-    </form>
-
-    {% if result %}
-        <div class="result {% if 'Malicious' in result %}malicious{% else %}normal{% endif %}">
-            <strong>Prediction:</strong> {{ result }} <br>
-            <strong>Risk Score:</strong> {{ risk }} %
+    <header>
+        <div class="header-content">
+            <span class="ai-badge">AI Powered</span>
+            <div class="status-dot"></div>
+            <span class="status-text">System Active</span>
         </div>
-    {% endif %}
+    </header>
 
-    {% if explanation %}
-        <div class="explanation">
-            <strong>Why was this result predicted?</strong>
-            <ul>
-                {% for reason in explanation %}
-                    <li>{{ reason }}</li>
-                {% endfor %}
-            </ul>
+    <div class="container">
+        <div class="main-card">
+            <h1>🛡️ SQL Intrusion Detection</h1>
+            <p class="subtitle">Advanced neural network analysis for malicious query detection</p>
+
+            <form method="POST" action="/raw_query">
+
+                <div class="input-section">
+                    <div class="input-label">
+                        <div class="input-icon">💻</div>
+                        SQL Query Input
+                    </div>
+            
+                    <textarea
+                        name="query"
+                        placeholder="Enter SQL query (SELECT only)"
+                        required>
+                    </textarea>
+                </div>
+            
+                <button type="submit">Run Query</button>
+            
+            </form>
+            
+
+            {% if result %}
+            <div class="result-box">
+                <div class="result-header">
+                    <div class="threat-badge {% if risk < 30 %}low{% elif risk < 70 %}medium{% else %}high{% endif %}">
+                        <span>{% if risk < 30 %}✓ Low Threat{% elif risk < 70 %}⚠ Medium Threat{% else %}⛔ High Threat{% endif %}</span>
+                    </div>
+                </div>
+                {% set risk_color = '#00ff9d' if risk < 30 else '#ffbf00' if risk < 70 else '#ff4444' %}
+
+                <div class="meter-container {{ 'low' if risk < 30 else 'medium' if risk < 70 else 'high' }}">
+                    <div class="meter">
+                        <svg>
+                            <circle class="bg" cx="90" cy="90" r="75"></circle>
+                            <circle class="progress"
+                                    cx="90" cy="90" r="75"
+                                    style="stroke-dashoffset: {{ 471 - (471 * risk / 100) }};">
+                            </circle>
+                        </svg>
+                
+                        <div class="meter-text">
+                            <span class="percentage">{{ risk }}%</span>
+                            <span class="label">Risk Score</span>
+                        </div>
+                    </div>
+                </div>
+                
+                
+                
+
+                <p class="prediction-text"><strong>Classification:</strong> {{ result }}</p>
+
+                {% if explanation %}
+                <div class="explanation">
+                    <div class="explanation-title">
+                        <span>🔍</span>
+                        Detection Insights
+                    </div>
+                    <ul>
+                        {% for reason in explanation %}
+                        <li>{{ reason }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
         </div>
-    {% endif %}
-</div>
+    </div>
+<!----
+-->
 
-<footer>
-    Machine Learning–Based Database Intrusion Detection System
-</footer>
-
+    <footer>
+        <div>Machine Learning–Based Database Security System</div>
+        <div class="footer-tech">Powered by Advanced Neural Networks • Real-time Threat Analysis</div>
+    </footer>
 </body>
 </html>
